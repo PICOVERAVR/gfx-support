@@ -8,7 +8,13 @@
 
 namespace vload {
 
+vloader::vloader() : meshList() {}
+
 vloader::vloader(std::string_view path, bool index, bool normals) : meshList() {
+	load(path, index, normals);
+}
+
+void vloader::load(std::string_view path, bool index, bool normals) {
 	Assimp::Importer imp;
 
 	// make everything triangles, generate normals if they aren't there, and join identical vertices together

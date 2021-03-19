@@ -20,7 +20,11 @@ public:
 
 class vloader {
 public:
+	vloader();
 	vloader(std::string_view path, bool index, bool normals);
+
+	void load(std::string_view path, bool index, bool normals);
+
 	std::vector<mesh> meshList;
 private:
 	void processNode(aiNode* node, const aiScene* scene);
