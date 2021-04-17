@@ -30,7 +30,7 @@ public:
 
 	void update(GLFWwindow*);
 private:
-	float rads(float deg) { return deg * float(M_PI) / 180.0f; }
+	constexpr float rads(float deg) { return deg * float(M_PI) / 180.0f; }
 
 	int skip;
 	float prevX, prevY;
