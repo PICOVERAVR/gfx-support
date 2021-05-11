@@ -10,11 +10,11 @@ namespace vload {
 
 vloader::vloader() : meshList() {}
 
-vloader::vloader(std::string_view path, bool index, bool normals) : meshList() {
-	load(path, index, normals);
+vloader::vloader(std::string_view path, bool index, bool normals, bool tangents) : meshList() {
+	load(path, index, normals, tangents);
 }
 
-void vloader::load(std::string_view path, bool index, bool normals) {
+void vloader::load(std::string_view path, bool index, bool normals, bool tangents) {
 	Assimp::Importer imp;
 
 	// make everything triangles, generate normals if they aren't there, and join identical vertices together
@@ -29,6 +29,10 @@ void vloader::load(std::string_view path, bool index, bool normals) {
 
 	if (normals) {
 		flags |= aiProcess_GenNormals;
+	}
+
+	if (tangents) {
+		flags |= aiProcess_CalcTangentSpace;
 	}
 	
 	const aiScene* scene = imp.ReadFile(path.data(), flags);
@@ -90,7 +94,6 @@ mesh vloader::processMesh(aiMesh* inMesh) {
 	}
 	
 	// not using tangents right now
-	/*
 	if (inMesh->HasTangentsAndBitangents()) {
 		if (inMesh->mTextureCoords[0]) {
 			for (size_t i = 0; i < inMesh->mNumVertices; i++) {
@@ -101,10 +104,9 @@ mesh vloader::processMesh(aiMesh* inMesh) {
 				vList[i].tangent = tangent;
 			}
 		} else {
-			cout << "mesh has no texture coordinates, cannot calculate tangents" << endl;
+			std::cout << "skipping tangent calculation\n";
 		}
 	}
-	*/
 	
 	return mesh(vList, indices);
 }

@@ -12,7 +12,7 @@ struct __attribute__((packed)) vertex {
     alignas(16) glm::vec3 pos;
     alignas(16) glm::vec3 normal;
     alignas(16) glm::vec2 uv;
-    // alignas(16) glm::vec3 tangent;
+    alignas(16) glm::vec3 tangent;
 };
 
 }

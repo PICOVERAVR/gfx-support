@@ -21,9 +21,9 @@ public:
 class vloader {
 public:
 	vloader();
-	vloader(std::string_view path, bool index, bool normals);
+	vloader(std::string_view path, bool index, bool normals, bool tangents);
 
-	void load(std::string_view path, bool index, bool normals);
+	void load(std::string_view path, bool index, bool normals, bool tangents);
 
 	std::vector<mesh> meshList;
 private:
