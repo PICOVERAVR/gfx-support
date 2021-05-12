@@ -11,13 +11,9 @@
 
 namespace iload {
 
-iloader::iloader() : width(0), height(0), data(nullptr) {}
+iloader::iloader(std::string_view npath, bool nflip) : path(npath), flip(nflip) { }
 
-iloader::iloader(std::string_view path, bool flip) {
-    load(path, flip);
-}
-
-void iloader::load(std::string_view path, bool flip) {
+void iloader::load() {
     // if the image format considers the origin to be the top left (png), then flip.
     stbi_set_flip_vertically_on_load_thread(flip);
 
@@ -26,6 +22,18 @@ void iloader::load(std::string_view path, bool flip) {
     if (!data) {
         throw std::runtime_error("cannot load texture!");
     }
+}
+
+void iloader::dispatch() {
+    t = std::thread([&]() -> void { load(); });
+}
+
+void iloader::join() {
+    if (!t.joinable()) {
+        throw std::runtime_error("cannot join non-joinable thread!");
+    }
+
+    t.join();
 }
 
 iloader::~iloader() {

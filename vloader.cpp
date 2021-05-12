@@ -8,19 +8,17 @@
 
 namespace vload {
 
-vloader::vloader() : meshList() {}
+vloader::vloader(std::string_view npath, bool nindex, bool nnormals, bool ntangents)
+	: path(npath), index(nindex), normals(nnormals), tangents(ntangents), meshList() {}
 
-vloader::vloader(std::string_view path, bool index, bool normals, bool tangents) : meshList() {
-	load(path, index, normals, tangents);
-}
-
-void vloader::load(std::string_view path, bool index, bool normals, bool tangents) {
+void vloader::load() {
 	Assimp::Importer imp;
 
-	// make everything triangles, generate normals if they aren't there, and join identical vertices together
+	// make everything triangles, generate normals if they aren't there, join identical vertices together, remove bad model data
 	unsigned int flags = aiProcess_Triangulate 
 						| aiProcess_OptimizeMeshes
-						| aiProcess_OptimizeGraph;
+						| aiProcess_OptimizeGraph
+						| aiProcess_FindInvalidData;
 	
 	if (index) {
 		// if JoinIdenticalVertices isn't specified, an index buffer isn't required.
@@ -28,7 +26,8 @@ void vloader::load(std::string_view path, bool index, bool normals, bool tangent
 	}
 
 	if (normals) {
-		flags |= aiProcess_GenNormals;
+		// create normals for all model vertices (joined or not) and fix inverted normals
+		flags |= aiProcess_GenSmoothNormals;
 	}
 
 	if (tangents) {
@@ -43,6 +42,18 @@ void vloader::load(std::string_view path, bool index, bool normals, bool tangent
 	}
 
 	processNode(scene->mRootNode, scene);
+}
+
+void vloader::dispatch() {
+	t = std::thread([&]() -> void { load(); });
+}
+
+void vloader::join() {
+    if (!t.joinable()) {
+        throw std::runtime_error("cannot join non-joinable thread!");
+    }
+
+    t.join();
 }
 
 // recursively visit nodes

@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <string>
+#include <thread>
 
 #include <assimp/scene.h>
 
@@ -20,10 +21,18 @@ public:
 
 class vloader {
 public:
-	vloader();
 	vloader(std::string_view path, bool index, bool normals, bool tangents);
 
-	void load(std::string_view path, bool index, bool normals, bool tangents);
+	void load();
+	void dispatch();
+	void join();
+
+	std::thread t;
+
+	std::string path;
+	bool index;
+	bool normals;
+	bool tangents;
 
 	std::vector<mesh> meshList;
 private:
