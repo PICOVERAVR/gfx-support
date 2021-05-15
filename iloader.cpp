@@ -20,7 +20,8 @@ void iloader::load() {
     int chans;
     data = stbi_load(path.data(), &width, &height, &chans, STBI_rgb_alpha);
     if (!data) {
-        throw std::runtime_error("cannot load texture!");
+        const std::string errstr = std::string("cannot load texture ") + path.data() + "!";
+        throw std::runtime_error(errstr);
     }
 }
 
